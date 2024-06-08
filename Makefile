@@ -1,5 +1,21 @@
 .PHONY: build clean ui
 
+init:
+	./answer init -C ./data/
+	
+run:
+	go run ./answer/main.go run -C ./data/
+	# answer run -C ./data/
+
+bb:
+	./answer build --with github.com/apache/incubator-answer-plugins/connector-wallet --with github.com/apache/incubator-answer-plugins/connector-github
+
+pp:
+	go run ./answer/main.go plugin	
+
+uu:
+	go run ./answer/main.go upgrade -C ./data/
+	
 VERSION=1.3.1
 BIN=answer
 DIR_SRC=./cmd/answer

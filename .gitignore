@@ -29,3 +29,10 @@ vendor/
 /new_answer
 
 dist/
+
+data/i18n/*
+data/conf/config.yaml
+data/cache/cache.db
+data/answer.db
+
+# connector-wallet
