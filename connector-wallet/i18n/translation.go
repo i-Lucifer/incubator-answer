@@ -24,8 +24,10 @@ const (
 	InfoName        = "plugin.wallet_connector.backend.info.name"
 	InfoDescription = "plugin.wallet_connector.backend.info.description"
 
-	// ConfigClientIDTitle           = "plugin.wallet_connector.backend.config.client_id.title"
-	// ConfigClientIDDescription     = "plugin.wallet_connector.backend.config.client_id.description"
-	// ConfigClientSecretTitle       = "plugin.wallet_connector.backend.config.client_secret.title"
-	// ConfigClientSecretDescription = "plugin.wallet_connector.backend.config.client_secret.description"
+	ConfigSignatureMethodTitle       = "plugin.wallet_connector.backend.config.signature_method.title"
+	ConfigSignatureMethodDescription = "plugin.wallet_connector.backend.config.signature_method.description"
+
+	ConfigSignatureMethodNonce     = "plugin.wallet_connector.backend.config.signature_method.nonce"
+	ConfigSignatureMethodRandom    = "plugin.wallet_connector.backend.config.signature_method.random"
+	ConfigSignatureMethodTimestamp = "plugin.wallet_connector.backend.config.signature_method.timestamp"
 )
