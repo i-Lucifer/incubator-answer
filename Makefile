@@ -1,20 +1,26 @@
 .PHONY: build clean ui
 
 init:
-	./answer init -C ./data/
+	go run ./answer-dev/main.go init -C ./data/
 	
 run:
-	go run ./answer/main.go run -C ./data/
+	go run ./answer-dev/main.go run -C ./data/
 	# answer run -C ./data/
 
 bb:
-	./answer build --with github.com/apache/incubator-answer-plugins/connector-wallet --with github.com/apache/incubator-answer-plugins/connector-github
+	./answer build --with github.com/apache/incubator-answer-plugins/connector-github
 
 pp:
-	go run ./answer/main.go plugin	
+	go run ./answer-dev/main.go plugin	
 
 uu:
-	go run ./answer/main.go upgrade -C ./data/
+	go run ./answer-dev/main.go upgrade -C ./data/
+
+rr:
+	./new_answer run -C ./data/
+	
+ru:
+	./new_answer upgrade -C ./data/
 	
 VERSION=1.3.1
 BIN=answer
