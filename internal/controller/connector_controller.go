@@ -97,7 +97,9 @@ func (cc *ConnectorController) ConnectorRedirectDispatcher(ctx *gin.Context) {
 	cc.ConnectorRedirect(c)(ctx)
 }
 
+// 点击三方登录时，触发Sender接口，获取到重定向
 func (cc *ConnectorController) ConnectorLogin(connector plugin.Connector) (fn func(ctx *gin.Context)) {
+	fmt.Printf("connector: %+v\n", connector)
 	return func(ctx *gin.Context) {
 		general, err := cc.siteInfoService.GetSiteGeneral(ctx)
 		if err != nil {

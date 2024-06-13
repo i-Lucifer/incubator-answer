@@ -21,6 +21,7 @@ package controller_admin
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/internal/schema"
@@ -80,15 +81,22 @@ func (pc *PluginController) GetPluginList(ctx *gin.Context) {
 
 	pluginConfigMapping := make(map[string]bool)
 	_ = plugin.CallConfig(func(fn plugin.Config) error {
+		fmt.Printf("SlugName: (%v) \n", fn.Info().SlugName)
 		if len(fn.ConfigFields()) > 0 {
+
 			pluginConfigMapping[fn.Info().SlugName] = true
 		}
 		return nil
 	})
 
+	// fmt.Printf("pluginConfigMapping: (%v) \n", pluginConfigMapping)
+
 	resp := make([]*schema.GetPluginListResp, 0)
 	_ = plugin.CallBase(func(base plugin.Base) error {
+
 		info := base.Info()
+		fmt.Printf("Name: (%v) \n", info.Name.Translate(ctx))
+
 		resp = append(resp, &schema.GetPluginListResp{
 			Name:        info.Name.Translate(ctx),
 			SlugName:    info.SlugName,
@@ -100,6 +108,8 @@ func (pc *PluginController) GetPluginList(ctx *gin.Context) {
 		})
 		return nil
 	})
+
+	// fmt.Printf("resp: (%v) \n", resp)
 
 	if len(req.Status) > 0 {
 		resp = pc.filterPluginByStatus(resp, req.Status)

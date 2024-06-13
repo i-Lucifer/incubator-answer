@@ -21,6 +21,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/apache/incubator-answer/internal/base/handler"
 	"github.com/apache/incubator-answer/plugin"
@@ -43,6 +44,7 @@ type GetCaptchaConfigResp struct {
 
 // GetCaptchaConfig get captcha config
 func (uc *CaptchaController) GetCaptchaConfig(ctx *gin.Context) {
+	fmt.Println("GetCaptchaConfig")
 	resp := &GetCaptchaConfigResp{}
 	_ = plugin.CallCaptcha(func(fn plugin.Captcha) error {
 		resp.SlugName = fn.Info().SlugName

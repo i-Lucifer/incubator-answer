@@ -45,6 +45,7 @@ func NewPluginAPIRouter(
 func (pr *PluginAPIRouter) RegisterUnAuthConnectorRouter(r *gin.RouterGroup) {
 	// connector plugin
 	connectorController := pr.connectorController
+	// 登录路由
 	r.GET(controller.ConnectorLoginRouterPrefix+":name", connectorController.ConnectorLoginDispatcher)
 	r.GET(controller.ConnectorRedirectRouterPrefix+":name", connectorController.ConnectorRedirectDispatcher)
 	r.GET("/connector/info", connectorController.ConnectorsInfo)
