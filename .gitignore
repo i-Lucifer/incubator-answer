@@ -36,3 +36,6 @@ data/cache/cache.db
 data/answer.db
 
 # connector-wallet
+
+data-bak
+answer-dev

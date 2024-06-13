@@ -20,17 +20,15 @@
 package wallet
 
 import (
-	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"time"
+	"log"
+	"strings"
 
 	"github.com/apache/incubator-answer-plugins/connector-wallet/i18n"
 	"github.com/apache/incubator-answer/plugin"
-	"github.com/google/go-github/v50/github"
-	"github.com/segmentfault/pacman/log"
-
-	"golang.org/x/oauth2"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type Connector struct {
@@ -73,14 +71,21 @@ func (g *Connector) ConnectorSlugName() string {
 }
 
 func (g *Connector) ConnectorSender(ctx *plugin.GinContext, receiverURL string) (redirectURL string) {
-	fmt.Printf("receiverURL: (%s) \n", receiverURL)
+	// fmt.Printf("receiverURL: (%s) \n", receiverURL)
 	// redirectURL = "https://www.baidu.com/"
 	redirectURL = ""
-	fmt.Printf("redirectURL: (%s) \n", redirectURL)
+	// fmt.Printf("redirectURL: (%s) \n", redirectURL)
 	return ""
 }
 
 func (g *Connector) ConnectorReceiver(ctx *plugin.GinContext, receiverURL string) (userInfo plugin.ExternalLoginUserInfo, err error) {
+	message := ctx.Query("message")
+	signature := ctx.Query("signature")
+	address := ctx.Query("address")
+	if !verifySignature(message, signature, address) {
+		return userInfo, fmt.Errorf("Signature verification failed")
+	}
+	userInfo.ExternalID = address
 	return userInfo, nil
 }
 
@@ -102,11 +107,11 @@ func (g *Connector) ConfigFields() []plugin.ConfigField {
 				},
 				{
 					Value: "random",
-					Label: plugin.MakeTranslator(i18n.ConfigSignatureMethodTimestamp),
+					Label: plugin.MakeTranslator(i18n.ConfigSignatureMethodRandom),
 				},
 				{
 					Value: "timestamp",
-					Label: plugin.MakeTranslator(i18n.ConfigSignatureMethodRandom),
+					Label: plugin.MakeTranslator(i18n.ConfigSignatureMethodTimestamp),
 				},
 			},
 		},
@@ -122,21 +127,42 @@ func (g *Connector) ConfigReceiver(config []byte) error {
 
 // 绑定电子邮箱
 func (g *Connector) guaranteeEmail(email string, accessToken string) string {
-	client := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	))
-	client.Timeout = 15 * time.Second
-	cli := github.NewClient(client)
-
-	emails, _, err := cli.Users.ListEmails(context.Background(), &github.ListOptions{Page: 1})
-	if err != nil {
-		log.Error(err)
-		return ""
-	}
-	for _, e := range emails {
-		if e.GetPrimary() {
-			return e.GetEmail()
-		}
-	}
 	return email
 }
+
+func verifySignature(message, signature, address string) bool {
+	sig, err := hex.DecodeString(signature[2:])
+	if err != nil {
+		log.Println("Failed to decode signature:", err)
+		return false
+	}
+	prefix := "\x19Ethereum Signed Message:\n" + fmt.Sprintf("%d", len(message))
+	msg := []byte(prefix + message)
+	msgHash := crypto.Keccak256Hash(msg)
+	if sig[64] != 27 && sig[64] != 28 {
+		return false
+	}
+	sig[64] -= 27
+	pubKey, err := crypto.SigToPub(msgHash.Bytes(), sig)
+	if err != nil {
+		log.Println("Failed to get public key from signature:", err)
+		return false
+	}
+	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
+	return strings.ToLower(recoveredAddr.Hex()) == strings.ToLower(address)
+}
+
+// func pp(params ...interface{}) {
+// 	for index, param := range params {
+// 		fmt.Printf("index (%d) param (%v) \n", index, param)
+// 	}
+// }
+
+// func pv(fn string, param interface{}) {
+// 	fmt.Printf("index (%s) param (%+v) \n", fn, param)
+// }
+
+// func pj(fn string, param interface{}) {
+// 	result, _ := json.Marshal(param)
+// 	fmt.Printf("index (%s) param (%s) \n", fn, result)
+// }

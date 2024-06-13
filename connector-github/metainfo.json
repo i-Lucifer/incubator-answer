@@ -1,0 +1,31 @@
+{
+    "MetaInfo": {
+        "login": "i-Lucifer",
+        "id": 17881596,
+        "node_id": "MDQ6VXNlcjE3ODgxNTk2",
+        "avatar_url": "https://avatars.githubusercontent.com/u/17881596?v=4",
+        "html_url": "https://github.com/i-Lucifer",
+        "gravatar_id": "",
+        "name": "Lucifer",
+        "blog": "",
+        "location": "ShangHai",
+        "public_repos": 6,
+        "public_gists": 0,
+        "followers": 3,
+        "following": 5,
+        "created_at": "2016-03-16T14:23:34Z",
+        "updated_at": "2024-06-11T06:49:56Z",
+        "type": "User",
+        "site_admin": false,
+        "url": "https://api.github.com/users/i-Lucifer",
+        "events_url": "https://api.github.com/users/i-Lucifer/events{/privacy}",
+        "following_url": "https://api.github.com/users/i-Lucifer/following{/other_user}",
+        "followers_url": "https://api.github.com/users/i-Lucifer/followers",
+        "gists_url": "https://api.github.com/users/i-Lucifer/gists{/gist_id}",
+        "organizations_url": "https://api.github.com/users/i-Lucifer/orgs",
+        "received_events_url": "https://api.github.com/users/i-Lucifer/received_events",
+        "repos_url": "https://api.github.com/users/i-Lucifer/repos",
+        "starred_url": "https://api.github.com/users/i-Lucifer/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/i-Lucifer/subscriptions"
+    }
+}

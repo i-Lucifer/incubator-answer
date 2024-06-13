@@ -71,7 +71,13 @@ func (g *Connector) ConnectorSlugName() string {
 	return "github"
 }
 
+// 点击登录时，组装参数
+// param receiverURL github跳回到我们的地址
+// return redirectURL 我们跳到github的地址
+// http://localhost/answer/api/v1/connector/redirect/github
+// https://github.com/login/oauth/authorize?client_id=Ov23liLXpj4g5UkCr4Y1&redirect_uri=
 func (g *Connector) ConnectorSender(ctx *plugin.GinContext, receiverURL string) (redirectURL string) {
+	pp("ConnectorSender", receiverURL)
 	oauth2Config := &oauth2.Config{
 		ClientID:     g.Config.ClientID,
 		ClientSecret: g.Config.ClientSecret,
@@ -79,11 +85,17 @@ func (g *Connector) ConnectorSender(ctx *plugin.GinContext, receiverURL string) 
 		RedirectURL:  receiverURL,
 		Scopes:       []string{"user:email"},
 	}
-	return oauth2Config.AuthCodeURL("state")
+	redirectURL = oauth2Config.AuthCodeURL("state")
+	pp("ConnectorSender", redirectURL)
+	return redirectURL
 }
 
+// 点击登录后，github跳转回时，调用的函数
+// http://localhost/answer/api/v1/connector/redirect/github
 func (g *Connector) ConnectorReceiver(ctx *plugin.GinContext, receiverURL string) (userInfo plugin.ExternalLoginUserInfo, err error) {
 	code := ctx.Query("code")
+	pp("ConnectorReceiver", receiverURL, code) // code = ba828f7273312a21970f
+
 	// Exchange code for token
 	oauth2Config := &oauth2.Config{
 		ClientID:     g.Config.ClientID,
@@ -118,10 +130,13 @@ func (g *Connector) ConnectorReceiver(ctx *plugin.GinContext, receiverURL string
 
 	// guarantee email was verified
 	userInfo.Email = g.guaranteeEmail(userInfo.Email, token.AccessToken)
+
+	pj("ConnectorReceiver", userInfo)
 	return userInfo, nil
 }
 
 func (g *Connector) guaranteeEmail(email string, accessToken string) string {
+	fmt.Println("guaranteeEmail:", email, accessToken)
 	client := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: accessToken},
 	))
@@ -135,13 +150,17 @@ func (g *Connector) guaranteeEmail(email string, accessToken string) string {
 	}
 	for _, e := range emails {
 		if e.GetPrimary() {
+			fmt.Println("guaranteeEmail:", email)
 			return e.GetEmail()
 		}
 	}
+	fmt.Println("guaranteeEmail:", email)
 	return email
 }
 
+// 列出插件
 func (g *Connector) ConfigFields() []plugin.ConfigField {
+	pp("ConfigFields")
 	return []plugin.ConfigField{
 		{
 			Name:        "client_id",
@@ -168,9 +187,26 @@ func (g *Connector) ConfigFields() []plugin.ConfigField {
 	}
 }
 
+// 保存配置
 func (g *Connector) ConfigReceiver(config []byte) error {
+	pp("ConfigReceiver", string(config))
 	c := &ConnectorConfig{}
 	_ = json.Unmarshal(config, c)
 	g.Config = c
 	return nil
+}
+
+func pp(params ...interface{}) {
+	for index, param := range params {
+		fmt.Printf("index (%d) param (%v) \n", index, param)
+	}
+}
+
+func pv(fn string, param interface{}) {
+	fmt.Printf("index (%s) param (%+v) \n", fn, param)
+}
+
+func pj(fn string, param interface{}) {
+	result, _ := json.Marshal(param)
+	fmt.Printf("index (%s) param (%s) \n", fn, result)
 }
