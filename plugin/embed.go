@@ -17,23 +17,14 @@
  * under the License.
  */
 
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
+package plugin
 
-import ToolItem from '../toolItem';
+type Embed interface {
+	Base
+}
 
-const Help = () => {
-  const { t } = useTranslation('translation', { keyPrefix: 'editor' });
-
-  const item = {
-    label: 'question-circle-fill',
-    tip: t('help.text'),
-  };
-  const handleClick = () => {
-    window.open('https://commonmark.org/help/');
-  };
-
-  return <ToolItem {...item} onClick={handleClick} />;
-};
-
-export default memo(Help);
+var (
+	// CallReviewer is a function that calls all registered parsers
+	CallEmbed,
+	registerEmbed = MakePlugin[Embed](false)
+)

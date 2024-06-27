@@ -331,7 +331,7 @@ const Index: FC = () => {
                           components={{ 1: <code /> }}
                         />{' '}
                         <Trans i18nKey="install.install_now">
-                          You may try{' '}
+                          You may try
                           <a href="###" onClick={(e) => handleInstallNow(e)}>
                             installing now
                           </a>

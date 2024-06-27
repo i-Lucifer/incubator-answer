@@ -17,23 +17,9 @@
  * under the License.
  */
 
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
+package schema
 
-import ToolItem from '../toolItem';
-
-const Help = () => {
-  const { t } = useTranslation('translation', { keyPrefix: 'editor' });
-
-  const item = {
-    label: 'question-circle-fill',
-    tip: t('help.text'),
-  };
-  const handleClick = () => {
-    window.open('https://commonmark.org/help/');
-  };
-
-  return <ToolItem {...item} onClick={handleClick} />;
-};
-
-export default memo(Help);
+type GetEmbedOptionResp struct {
+	Platform string `json:"platform"`
+	Enable   bool   `json:"enable"`
+}

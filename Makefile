@@ -22,7 +22,7 @@ rr:
 ru:
 	./new_answer upgrade -C ./data/
 	
-VERSION=1.3.1
+VERSION=1.3.5
 BIN=answer
 DIR_SRC=./cmd/answer
 DOCKER_CMD=docker

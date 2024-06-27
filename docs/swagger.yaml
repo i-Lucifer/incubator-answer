@@ -1,3 +1,20 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
 definitions:
   constant.NotificationChannelKey:
     enum:
@@ -425,6 +442,20 @@ definitions:
       name:
         type: string
     type: object
+  schema.EditUserProfileReq:
+    properties:
+      email:
+        maxLength: 500
+        type: string
+      user_id:
+        type: string
+      username:
+        maxLength: 30
+        type: string
+    required:
+    - email
+    - user_id
+    type: object
   schema.ExternalLoginBindingUserSendEmailReq:
     properties:
       binding_key:
@@ -649,6 +680,13 @@ definitions:
         type: string
       website:
         description: website
+        type: string
+    type: object
+  schema.GetEmbedOptionResp:
+    properties:
+      enable:
+        type: boolean
+      platform:
         type: string
     type: object
   schema.GetFollowingTagsResp:
@@ -1499,6 +1537,22 @@ definitions:
     required:
     - id
     type: object
+  schema.ReactionItem:
+    properties:
+      count:
+        type: integer
+      is_active:
+        type: boolean
+      tooltip:
+        type: string
+    type: object
+  schema.ReactionResp:
+    properties:
+      reaction_summary:
+        additionalProperties:
+          $ref: '#/definitions/schema.ReactionItem'
+        type: object
+    type: object
   schema.ReasonItem:
     properties:
       content_type:
@@ -2219,6 +2273,26 @@ definitions:
         minimum: 1
     required:
     - level
+    type: object
+  schema.UpdateReactionReq:
+    properties:
+      emoji:
+        enum:
+        - heart
+        - smile
+        - frown
+        type: string
+      object_id:
+        type: string
+      reaction:
+        enum:
+        - activate
+        - deactivate
+        type: string
+    required:
+    - emoji
+    - object_id
+    - reaction
     type: object
   schema.UpdateReviewReq:
     properties:
@@ -3574,6 +3648,30 @@ paths:
       summary: update user password
       tags:
       - admin
+  /answer/admin/api/user/profile:
+    put:
+      consumes:
+      - application/json
+      description: edit user profile
+      parameters:
+      - description: user
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.EditUserProfileReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.RespBody'
+      security:
+      - ApiKeyAuth: []
+      summary: edit user profile
+      tags:
+      - admin
   /answer/admin/api/user/role:
     put:
       consumes:
@@ -4235,6 +4333,28 @@ paths:
       summary: unbind external user login
       tags:
       - PluginConnector
+  /answer/api/v1/embed/config:
+    get:
+      consumes:
+      - application/json
+      description: GetEmbedConfig
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.RespBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schema.GetEmbedOptionResp'
+                  type: array
+              type: object
+      summary: GetEmbedConfig
+      tags:
+      - PluginEmbed
   /answer/api/v1/file:
     post:
       consumes:
@@ -4355,6 +4475,57 @@ paths:
       summary: Get language options
       tags:
       - Lang
+  /answer/api/v1/meta/reaction:
+    get:
+      consumes:
+      - application/json
+      description: get reaction for an object
+      parameters:
+      - description: object_id
+        in: query
+        name: object_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.RespBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/schema.ReactionResp'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: get reaction
+      tags:
+      - Meta
+    put:
+      consumes:
+      - application/json
+      description: update reaction. if not exist, add one
+      parameters:
+      - description: reaction
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdateReactionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.RespBody'
+      security:
+      - ApiKeyAuth: []
+      summary: add or update reaction
+      tags:
+      - Meta
   /answer/api/v1/notification/page:
     get:
       consumes:
